@@ -151,11 +151,11 @@ func (b *StorageBuilder) Run(ctx context.Context) error {
 		if err != nil {
 			return errors.Trace(err)
 		}
+		atomic.StoreUint64(&b.resolvedTs, rawKV.Ts)
 		if job == nil {
 			continue
 		}
 		b.jobList.AppendJob(job)
-		atomic.StoreUint64(&b.resolvedTs, rawKV.Ts)
 	}
 }
 
