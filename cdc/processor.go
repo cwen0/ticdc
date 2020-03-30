@@ -282,6 +282,7 @@ func (p *processor) positionWorker(ctx context.Context) error {
 				tableResolvedTsGauge.WithLabelValues(p.changefeedID, p.captureID, strconv.FormatInt(table.id, 10)).Set(float64(oracle.ExtractPhysical(ts)))
 
 				if ts < minResolvedTs {
+					log.Debug("table ts less than minResolvedTs", zap.Uint64("ts", ts), zap.Int64("tid", table.id))
 					minResolvedTs = ts
 				}
 			}
