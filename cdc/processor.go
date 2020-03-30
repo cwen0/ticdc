@@ -287,12 +287,14 @@ func (p *processor) positionWorker(ctx context.Context) error {
 			p.tablesMu.Unlock()
 			// some puller still haven't received the row changed data
 			if minResolvedTs < p.position.ResolvedTs {
+				log.Debug("make p.resolvedTsFallback", zap.Uint64("minResolvedTs", minResolvedTs))
 				atomic.StoreInt32(&p.resolvedTsFallback, 1)
 				continue
 			}
 			atomic.StoreInt32(&p.resolvedTsFallback, 0)
 
 			if minResolvedTs == p.position.ResolvedTs {
+				log.Debug("minResolvedTs equals to position resolved ts", zap.Uint64("minResolvedTs", minResolvedTs))
 				continue
 			}
 
@@ -482,6 +484,7 @@ func (p *processor) globalStatusWorker(ctx context.Context) error {
 		if lastResolvedTs == changefeedStatus.ResolvedTs &&
 			lastCheckPointTs == changefeedStatus.CheckpointTs {
 			time.Sleep(waitGlobalResolvedTsDelay)
+			log.Debug("processor ts not forward", zap.Uint64("resolved ts", lastResolvedTs), zap.Uint64("checkpoint ts", lastCheckPointTs))
 			continue
 		}
 
@@ -494,6 +497,7 @@ func (p *processor) globalStatusWorker(ctx context.Context) error {
 		}
 
 		if atomic.LoadInt32(&p.resolvedTsFallback) != 0 {
+			log.Debug("resolved ts fallback")
 			time.Sleep(waitFallbackResolvedTsDelay)
 			continue
 		}
