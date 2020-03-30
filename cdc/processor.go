@@ -502,6 +502,7 @@ func (p *processor) globalStatusWorker(ctx context.Context) error {
 			continue
 		}
 
+		log.Debug("before emit resolved event", zap.Uint64("lastResolvedTs", lastResolvedTs), zap.Uint64("ResolvedTs", changefeedStatus.ResolvedTs))
 		if lastResolvedTs < changefeedStatus.ResolvedTs {
 			err = p.sink.EmitResolvedEvent(ctx, changefeedStatus.ResolvedTs)
 			if err != nil {
