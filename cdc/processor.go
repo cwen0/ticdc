@@ -275,6 +275,7 @@ func (p *processor) positionWorker(ctx context.Context) error {
 			return ctx.Err()
 		case <-resolveTsTick.C:
 			minResolvedTs := p.schemaBuilder.GetResolvedTs()
+			log.Debug("processor ddl resolved ts", zap.Uint64("minResolvedTs", minResolvedTs))
 			p.tablesMu.Lock()
 			for _, table := range p.tables {
 				ts := table.loadResolvedTS()
